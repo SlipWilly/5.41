@@ -9,7 +9,7 @@ type ApiResponse =
   | { recipe: Recipe; error?: never }
   | { recipe?: never; error: string };
 
-// Safe extractor
+// Safe extractor (no `any`)
 function errorMessage(err: unknown): string {
   if (typeof err === "string") return err;
   if (err && typeof err === "object" && "message" in err && typeof (err as { message?: unknown }).message === "string") {
@@ -64,8 +64,18 @@ export default function Home() {
       });
 
       const data: ApiResponse = await r.json().catch(() => ({ error: "Invalid JSON from server" }));
-      if (!r.ok || !("recipe" in data)) {
-        throw new Error(("error" in data && data.error) ? data.error : `Error ${r.status}`);
+
+      // Type guard to ensure we only proceed when recipe exists
+      const hasRecipe = (d: ApiResponse): d is { recipe: Recipe } =>
+        d !== null &&
+        typeof d === "object" &&
+        "recipe" in d &&
+        typeof (d as Record<string, unknown>).recipe === "object" &&
+        (d as { recipe: Recipe }).recipe !== undefined;
+
+      if (!r.ok || !hasRecipe(data)) {
+        const msg = ("error" in data && data.error) ? data.error : `Error ${r.status}`;
+        throw new Error(msg);
       }
 
       setRecipe(data.recipe);
@@ -86,7 +96,7 @@ export default function Home() {
             checked={demoMode}
             onChange={(e) => setDemoMode(e.target.checked)}
           />{" "}
-          Demo mode
+          Demo mode (no API)
         </label>
       </header>
 
