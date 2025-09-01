@@ -9,7 +9,7 @@ type ApiResponse =
   | { recipe: Recipe; error?: never }
   | { recipe?: never; error: string };
 
-// Safe extractor so we never use `any`
+// Safe extractor
 function errorMessage(err: unknown): string {
   if (typeof err === "string") return err;
   if (err && typeof err === "object" && "message" in err && typeof (err as { message?: unknown }).message === "string") {
@@ -81,7 +81,12 @@ export default function Home() {
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
         <h1>Recipe Builder (Demo)</h1>
         <label style={{ fontSize: 14 }}>
-          <input type="checkbox" checked={demoMode} onChange={e => setDemoMode(e.target.checked)} /> Demo mode
+          <input
+            type="checkbox"
+            checked={demoMode}
+            onChange={(e) => setDemoMode(e.target.checked)}
+          />{" "}
+          Demo mode
         </label>
       </header>
 
@@ -89,7 +94,60 @@ export default function Home() {
         onSubmit={submit}
         style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr 1fr auto", marginBottom: 16 }}
       >
-        <input value={product} onChange={e=>setProduct(e.target.value)} placeholder="Product" />
-        <input value={dishType} onChange={e=>setDishType(e.target.value)} placeholder="Dish Type" />
-        <input value={dietary} onChange={e=>setDietary(e.target.value)} placeholder="Dietary" />
-        <button type="submit" disabled={loading}>{loading ? "Generating…"
+        <input
+          value={product}
+          onChange={(e) => setProduct(e.target.value)}
+          placeholder="Product"
+        />
+        <input
+          value={dishType}
+          onChange={(e) => setDishType(e.target.value)}
+          placeholder="Dish Type"
+        />
+        <input
+          value={dietary}
+          onChange={(e) => setDietary(e.target.value)}
+          placeholder="Dietary"
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? "Generating…" : "Generate"}
+        </button>
+      </form>
+
+      {err && (
+        <div style={{ background: "#ffe8e8", padding: 12, borderRadius: 8, marginBottom: 12 }}>
+          {err}
+        </div>
+      )}
+
+      {recipe ? (
+        <article style={{ background: "#f9f9f9", padding: 16, borderRadius: 8 }}>
+          <h2 style={{ marginTop: 0 }}>{recipe.title}</h2>
+
+          <h3>Ingredients</h3>
+          <ul>
+            {recipe.ingredients.map((ing, i) => (
+              <li key={i}>
+                {ing.quantity} {ing.item}
+              </li>
+            ))}
+          </ul>
+
+          <h3>Steps</h3>
+          <ol>
+            {recipe.steps.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ol>
+
+          <h3>Pairing</h3>
+          <p>
+            <b>{recipe.pairing.product}:</b> {recipe.pairing.description}
+          </p>
+        </article>
+      ) : (
+        !loading && !err && <p style={{ color: "#888" }}>Your recipe will appear here…</p>
+      )}
+    </main>
+  );
+}
