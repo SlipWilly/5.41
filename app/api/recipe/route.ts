@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "OPENAI_API_KEY missing (set it in Vercel → Project → Settings → Environment Variables)." },
+        { error: "OPENAI_API_KEY missing (set it in Vercel → Project → Settings → Environment Variables)" },
         { status: 500 }
       );
     }
@@ -33,10 +33,4 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey });
 
-    const prompt =
-      `Create a gourmet recipe using ${product}.\n` +
-      `Dish type: ${dishType}.\n` +
-      `Dietary preference: ${dietary}.\n` +
-      `Return: a title, ingredients with quantities (US measurements), and step-by-step instructions.\n` +
-      `Also suggest o
-
+    // ✅ Use ONE template li
