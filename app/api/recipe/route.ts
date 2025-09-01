@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const prompt = lines.join("\n");
 
     const result = await openai.chat.completions.create({
-      model: "gpt-4o-mini",      // EDIT if you prefer another available model
+      model: "gpt-3.5-turbo",      // EDIT if you prefer another available model
       temperature: 0.7,          // EDIT for creativity
       max_tokens: 800,           // EDIT to control output length
       messages: [{ role: "user", content: prompt }]
