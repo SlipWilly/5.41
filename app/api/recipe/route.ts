@@ -32,8 +32,38 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey });
 
-    // ✅ No backticks at all to avoid template literal issues
-    const prompt =
-      "Create a gourmet recipe using " + product + ".\n" +
-      "Dish type: " + dishType + ".\n" +
-      "Dietary preferenc
+    // ✅ Build the prompt from an array and join with "\n" to avoid multi-line string issues
+    const lines = [
+      "Create a gourmet recipe using " + product + ".",
+      "Dish type: " + dishType + ".",
+      "Dietary preference: " + dietary + ".",
+      "Return: a title, ingredients with quantities (US measurements), and step-by-step instructions.",
+      "Also suggest one pairing with another Saratoga Olive Oil product."
+    ];
+    const prompt = lines.join("\n");
+
+    const result = await openai.chat.completions.create({
+      model: "gpt-4o-mini",      // EDIT if you prefer another available model
+      temperature: 0.7,          // EDIT for creativity
+      max_tokens: 800,           // EDIT to control output length
+      messages: [{ role: "user", content: prompt }]
+    });
+
+    const recipe = result.choices?.[0]?.message?.content?.trim() || "";
+    if (!recipe) {
+      return NextResponse.json(
+        { error: "The model returned no content. Try again or adjust the prompt." },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({ recipe }, { status: 200 });
+  } catch (err: unknown) {
+    const e = err as { status?: number; code?: string; type?: string; message?: string };
+    const status = typeof e?.status === "number" ? e.status : 500;
+    const code = e?.code || e?.type || "internal_error";
+    const message = typeof e?.message === "string" ? e.message : "Failed to generate recipe";
+    console.error("API ERROR", { status, code, message });
+    return NextResponse.json({ error: message, code }, { status });
+  }
+}
