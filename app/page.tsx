@@ -87,76 +87,156 @@ export default function Home() {
   }
 
   return (
-    <main style={{ maxWidth: 880, margin: "40px auto", fontFamily: "system-ui", padding: "0 16px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <h1>Recipe Builder (Demo)</h1>
-        <label style={{ fontSize: 14 }}>
+    <main
+      style={{
+        maxWidth: 880,
+        margin: "0 auto",
+        fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+        padding: "32px 16px 64px",
+        color: "#111",            // force readable text
+        background: "#f4f4f4",    // light backdrop for contrast
+        minHeight: "100vh",
+      }}
+    >
+      <header style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16
+      }}>
+        <h1 style={{ margin: 0, fontSize: 22 }}>Recipe Builder (Demo)</h1>
+        <label style={{ fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
           <input
             type="checkbox"
             checked={demoMode}
             onChange={(e) => setDemoMode(e.target.checked)}
-          />{" "}
+          />
           Demo mode (no API)
         </label>
       </header>
 
       <form
         onSubmit={submit}
-        style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr 1fr auto", marginBottom: 16 }}
+        style={{
+          display: "grid",
+          gap: 10,
+          gridTemplateColumns: "1fr 1fr 1fr auto",
+          alignItems: "end",
+          marginBottom: 16,
+        }}
       >
-        <input
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
-          placeholder="Product"
-        />
-        <input
-          value={dishType}
-          onChange={(e) => setDishType(e.target.value)}
-          placeholder="Dish Type"
-        />
-        <input
-          value={dietary}
-          onChange={(e) => setDietary(e.target.value)}
-          placeholder="Dietary"
-        />
-        <button type="submit" disabled={loading}>
+        <div style={{ display: "grid", gap: 6 }}>
+          <label style={{ fontSize: 12, color: "#333" }}>Product</label>
+          <input
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+            placeholder="Product"
+            style={{
+              height: 36, padding: "0 10px", borderRadius: 6,
+              border: "1px solid #d9d9d9", background: "#fff", color: "#111"
+            }}
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: 6 }}>
+          <label style={{ fontSize: 12, color: "#333" }}>Dish Type</label>
+          <input
+            value={dishType}
+            onChange={(e) => setDishType(e.target.value)}
+            placeholder="Dish Type"
+            style={{
+              height: 36, padding: "0 10px", borderRadius: 6,
+              border: "1px solid #d9d9d9", background: "#fff", color: "#111"
+            }}
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: 6 }}>
+          <label style={{ fontSize: 12, color: "#333" }}>Dietary</label>
+          <input
+            value={dietary}
+            onChange={(e) => setDietary(e.target.value)}
+            placeholder="Dietary"
+            style={{
+              height: 36, padding: "0 10px", borderRadius: 6,
+              border: "1px solid #d9d9d9", background: "#fff", color: "#111"
+            }}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            height: 36,
+            padding: "0 16px",
+            borderRadius: 6,
+            border: "none",
+            background: loading ? "#6aa8ff" : "#0070f3",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: loading ? "default" : "pointer",
+          }}
+        >
           {loading ? "Generating…" : "Generate"}
         </button>
       </form>
 
       {err && (
-        <div style={{ background: "#ffe8e8", padding: 12, borderRadius: 8, marginBottom: 12 }}>
+        <div style={{
+          background: "#ffe8e8",
+          color: "#b00020",
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 12,
+          border: "1px solid #f5c2c2",
+        }}>
           {err}
         </div>
       )}
 
       {recipe ? (
-        <article style={{ background: "#f9f9f9", padding: 16, borderRadius: 8 }}>
-          <h2 style={{ marginTop: 0 }}>{recipe.title}</h2>
+        <article
+          style={{
+            background: "#ffffff",
+            color: "#222",
+            padding: 20,
+            borderRadius: 12,
+            border: "1px solid #e6e6e6",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+          }}
+        >
+          <h2 style={{ marginTop: 0, marginBottom: 12 }}>{recipe.title}</h2>
 
-          <h3>Ingredients</h3>
-          <ul>
+          <h3 style={{ marginBottom: 6 }}>Ingredients</h3>
+          <ul style={{ marginTop: 0, paddingLeft: 18, lineHeight: 1.6 }}>
             {recipe.ingredients.map((ing, i) => (
               <li key={i}>
-                {ing.quantity} {ing.item}
+                <span style={{ fontWeight: 600 }}>{ing.quantity}</span>{" "}
+                <span>{ing.item}</span>
               </li>
             ))}
           </ul>
 
-          <h3>Steps</h3>
-          <ol>
+          <h3 style={{ marginBottom: 6, marginTop: 18 }}>Steps</h3>
+          <ol style={{ marginTop: 0, paddingLeft: 18, lineHeight: 1.7 }}>
             {recipe.steps.map((s, i) => (
               <li key={i}>{s}</li>
             ))}
           </ol>
 
-          <h3>Pairing</h3>
-          <p>
+          <h3 style={{ marginBottom: 6, marginTop: 18 }}>Pairing</h3>
+          <p style={{ marginTop: 0 }}>
             <b>{recipe.pairing.product}:</b> {recipe.pairing.description}
           </p>
         </article>
       ) : (
-        !loading && !err && <p style={{ color: "#888" }}>Your recipe will appear here…</p>
+        !loading &&
+        !err && (
+          <p style={{ color: "#555", marginTop: 8 }}>
+            Your recipe will appear here…
+          </p>
+        )
       )}
     </main>
   );
