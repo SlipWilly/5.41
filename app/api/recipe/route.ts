@@ -1,15 +1,33 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
+import { NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-  if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: "OPENAI_API_KEY missing" });
+export async function POST(req: Request) {
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json({ error: "OPENAI_API_KEY missing" }, { status: 500 });
+  }
 
-  const { product, dishType, dietary } = req.body ?? {};
+  const { product, dishType, dietary } = await req.json();
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const r = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{
-      role: "user",
-      content: `Create a gourmet recipe using ${product}. Dish: ${dishType}. Dietary: ${dietary}.
+  try {
+    const result = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: `Create a gourmet recipe using ${product}.
+Dish: ${dishType}. Dietary: ${dietary}.
+Return title, ingredients with quantities, and step-by-step instructions.
+Suggest one pairing with another Saratoga Olive Oil product.`
+        }
+      ]
+    });
+
+    const recipe = result.choices?.[0]?.message?.content ?? "";
+    return NextResponse.json({ recipe });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to generate recipe" }, { status: 500 });
+  }
+}
+
