@@ -12,7 +12,10 @@
     "next": "15.5.2",
     "openai": "^5.16.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "framer-motion": "^11.3.31",
+    "lucide-react": "^0.453.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
